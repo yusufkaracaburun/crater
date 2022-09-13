@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>@lang('pdf_estimate_label') - {{$estimate->estimate_number}}</title>
+    <title>@lang('pdf_estimate_label') - {{ $estimate->estimate_number }}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
         /* -- Base -- */
@@ -46,7 +46,7 @@
 
         .header-logo {
             position: absolute;
-            height: 50px;
+
             text-transform: capitalize;
             color: #fff;
         }
@@ -94,7 +94,7 @@
 
         /* -- Address -- */
 
-        .wrapper {
+        .content-wrapper {
             display: block;
             margin-top: 60px;
             padding-bottom: 20px;
@@ -278,6 +278,7 @@
 
         /* -- Total Display Table -- */
 
+
         .total-display-container {
             padding: 0 25px;
         }
@@ -291,9 +292,9 @@
             page-break-inside: avoid;
             page-break-before: auto;
             page-break-after: auto;
-            margin-left: 500px;
-            border: 1px solid #EAF1FB;
-            border-top: none;
+            margin-top: 20px;
+            float: right;
+            width: auto;
         }
 
         .total-table-attribute-label {
@@ -313,12 +314,26 @@
             padding-bottom: 2px;
         }
 
+        .total-border-left {
+            border: 1px solid #E8E8E8 !important;
+            border-right: 0px !important;
+            padding-top: 0px;
+            padding: 8px !important;
+        }
+
+        .total-border-right {
+            border: 1px solid #E8E8E8 !important;
+            border-left: 0px !important;
+            padding-top: 0px;
+            padding: 8px !important;
+        }
+
         /* -- Notes -- */
 
         .notes {
             font-size: 12px;
             color: #595959;
-            margin-top: 15px;
+            margin-top: 80px;
             margin-left: 30px;
             width: 442px;
             text-align: left;
@@ -331,6 +346,7 @@
             letter-spacing: 0.05em;
             color: #040405;
             width: 108px;
+            white-space: nowrap;
             height: 19.87px;
             padding-bottom: 10px;
         }
@@ -390,6 +406,7 @@
         .pl-0 {
             padding-left: 0;
         }
+
     </style>
 </head>
 
@@ -397,60 +414,61 @@
     <div class="header-container">
         <table width="100%">
             <tr>
-                @if($logo)
-                <td width="60%" class="header-section-left">
-                    <img class="header-logo" src="{{ $logo }}" alt="Company Logo">
-                    @else
-                <td width="60%" class="header-section-left" style="padding-top: 0px;">
-                    @if($estimate->user->company)
-                    <h1 class="header-logo"> {{$estimate->user->company->name}} </h1>
-                    @endif
-                    @endif
-                </td>
+                @if ($logo)
+                    <td width="60%" class="header-section-left">
+                        <img class="header-logo" style="height: 50px;" src="{{ $logo }}" alt="Company Logo">
+                    </td>
+                @else
+                    <td width="60%" class="header-section-left" style="padding-top: 0px;">
+                        @if ($estimate->customer->company)
+                            <h1 class="header-logo"> {{ $estimate->customer->company->name }} </h1>
+                        @endif
+                    </td>
+                @endif
                 <td width="40%" class="header-section-right estimate-details-container">
                     <h1>@lang('pdf_estimate_label')</h1>
-                    <h4>{{$estimate->estimate_number}}</h4>
-                    <h4>{{$estimate->formattedEstimateDate}}</h4>
+                    <h4>{{ $estimate->estimate_number }}</h4>
+                    <h4>{{ $estimate->formattedEstimateDate }}</h4>
                 </td>
             </tr>
         </table>
     </div>
     <hr>
-    <div class="wrapper">
+    <div class="content-wrapper">
         <div class="address-container">
             <div class="company-address-container company-address">
                 {!! $company_address !!}
             </div>
-            @if($shipping_address !== '</br>')
-            <div class="shipping-address-container shipping-address">
-                @if($shipping_address)
-                    @lang('pdf_ship_to')
-                    {!! $shipping_address !!}
-                @endif
-            </div>
+
+            @if ($shipping_address !== '</br>')
+                <div class="shipping-address-container shipping-address">
+                    @if ($shipping_address)
+                        <b>@lang('pdf_ship_to')</b> <br>
+                        {!! $shipping_address !!}
+                    @endif
+                </div>
             @endif
-            @if($shipping_address !== '</br>')
-            <div class="billing-address-container billing-address">
-            @else
-            <div class="billing-address-container billing-address" style="float:right; margin-right:30px;">
-            @endif
-                @if($billing_address)
-                    @lang('pdf_bill_to')
+
+            <div class="billing-address-container billing-address" @if ($shipping_address === '</br>') style="float:right; margin-right:30px;" @endif>
+                @if ($billing_address)
+                    <b>@lang('pdf_bill_to')</b> <br>
                     {!! $billing_address !!}
                 @endif
             </div>
             <div style="clear: both;"></div>
-            </div>
-            @include('app.pdf.estimate.partials.table')
-            <div class="notes">
-                @if($notes)
-                    <div class="notes-label">
-                        @lang('pdf_notes')
-                    </div>
-                    {!! $notes !!}
-                @endif
-            </div>
         </div>
+
+        @include('app.pdf.estimate.partials.table')
+
+        <div class="notes">
+            @if ($notes)
+                <div class="notes-label">
+                    @lang('pdf_notes')
+                </div>
+                {!! $notes !!}
+            @endif
+        </div>
+    </div>
 </body>
 
 </html>

@@ -1,17 +1,18 @@
 <?php
+
 namespace Crater\Mail;
 
-use Config;
 use Crater\Models\EmailLog;
 use Crater\Models\Invoice;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Vinkla\Hashids\Facades\Hashids;
 
 class SendInvoiceMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     public $data = [];
 
@@ -32,25 +33,31 @@ class SendInvoiceMail extends Mailable
      */
     public function build()
     {
-        EmailLog::create([
+        $log = EmailLog::create([
             'from' => $this->data['from'],
             'to' => $this->data['to'],
             'subject' => $this->data['subject'],
             'body' => $this->data['body'],
             'mailable_type' => Invoice::class,
-            'mailable_id' => $this->data['invoice']['id']
+            'mailable_id' => $this->data['invoice']['id'],
         ]);
-        
+
+        $log->token = Hashids::connection(EmailLog::class)->encode($log->id);
+        $log->save();
+
+        $this->data['url'] = route('invoice', ['email_log' => $log->token]);
+
         $mailContent = $this->from($this->data['from'], config('mail.from.name'))
             ->subject($this->data['subject'])
             ->markdown('emails.send.invoice', ['data', $this->data]);
 
-        if ($this->data['attach']['data'])
+        if ($this->data['attach']['data']) {
             $mailContent->attachData(
-                $this->data['attach']['data']->output(), 
-                $this->data['invoice']['invoice_number'] . '.pdf'
+                $this->data['attach']['data']->output(),
+                $this->data['invoice']['invoice_number'].'.pdf'
             );
-        
+        }
+
         return $mailContent;
     }
 }

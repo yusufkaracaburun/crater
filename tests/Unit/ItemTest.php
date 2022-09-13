@@ -1,28 +1,15 @@
 <?php
 
-use Crater\Models\User;
-use Crater\Models\Item;
-use Crater\Models\InvoiceItem;
-use Crater\Models\Invoice;
-use Crater\Models\EstimateItem;
 use Crater\Models\Estimate;
+use Crater\Models\EstimateItem;
+use Crater\Models\Invoice;
+use Crater\Models\InvoiceItem;
+use Crater\Models\Item;
 use Illuminate\Support\Facades\Artisan;
-use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
     Artisan::call('db:seed', ['--class' => 'DatabaseSeeder', '--force' => true]);
     Artisan::call('db:seed', ['--class' => 'DemoSeeder', '--force' => true]);
-    Artisan::call('db:seed', ['--class' => 'UnitSeeder', '--force' => true]);
-
-    $user = User::where('role', 'super admin')->first();
-
-    $this->withHeaders([
-        'company' => $user->company_id,
-    ]);
-    Sanctum::actingAs(
-        $user,
-        ['*']
-    );
 });
 
 test('an item belongs to unit', function () {
@@ -40,7 +27,7 @@ test('an item has many taxes', function () {
 
 test('an item has many invoice items', function () {
     $item = Item::factory()->has(InvoiceItem::factory()->count(5)->state([
-        'invoice_id' => Invoice::factory()
+        'invoice_id' => Invoice::factory(),
     ]))->create();
 
     $this->assertCount(5, $item->invoiceItems);
@@ -52,7 +39,7 @@ test('an item has many estimate items', function () {
     $item = Item::factory()->has(EstimateItem::factory()
         ->count(5)
         ->state([
-            'estimate_id' => Estimate::factory()
+            'estimate_id' => Estimate::factory(),
         ]))
         ->create();
 

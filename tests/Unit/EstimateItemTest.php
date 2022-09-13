@@ -1,24 +1,13 @@
 <?php
 
-use Crater\Models\User;
 use Crater\Models\Estimate;
-use Crater\Models\Item;
 use Crater\Models\EstimateItem;
+use Crater\Models\Item;
 use Illuminate\Support\Facades\Artisan;
-use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
     Artisan::call('db:seed', ['--class' => 'DatabaseSeeder', '--force' => true]);
     Artisan::call('db:seed', ['--class' => 'DemoSeeder', '--force' => true]);
-
-    $user = User::where('role', 'super admin')->first();
-    $this->withHeaders([
-        'company' => $user->company_id,
-    ]);
-    Sanctum::actingAs(
-        $user,
-        ['*']
-    );
 });
 
 test('estimate item belongs to estimate', function () {
@@ -30,7 +19,7 @@ test('estimate item belongs to estimate', function () {
 test('estimate item belongs to item', function () {
     $estimateItem = EstimateItem::factory()->create([
         'item_id' => Item::factory(),
-        'estimate_id' => Estimate::factory()
+        'estimate_id' => Estimate::factory(),
     ]);
 
     $this->assertTrue($estimateItem->item()->exists());
@@ -39,7 +28,7 @@ test('estimate item belongs to item', function () {
 
 test('estimate item has many taxes', function () {
     $estimateItem = EstimateItem::factory()->hasTaxes(5)->create([
-        'estimate_id' => Estimate::factory()
+        'estimate_id' => Estimate::factory(),
     ]);
 
     $this->assertCount(5, $estimateItem->taxes);

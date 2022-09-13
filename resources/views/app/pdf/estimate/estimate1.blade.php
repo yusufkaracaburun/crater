@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>@lang('pdf_estimate_label') - {{$estimate->estimate_number}}</title>
+    <title>@lang('pdf_estimate_label') - {{ $estimate->estimate_number }}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <style type="text/css">
@@ -46,7 +46,7 @@
         }
 
         .header-logo {
-            height: 50px;
+
             margin-top: 20px;
             text-transform: capitalize;
             color: #817AE3;
@@ -260,6 +260,7 @@
 
         .total-display-container {
             padding: 0 25px;
+
         }
 
         .total-display-table {
@@ -268,8 +269,10 @@
             page-break-inside: avoid;
             page-break-before: auto;
             page-break-after: auto;
-            margin-left: 500px;
             margin-top: 20px;
+            float: right;
+            width: auto;
+
         }
 
         .total-table-attribute-label {
@@ -308,7 +311,7 @@
         .notes {
             font-size: 12px;
             color: #595959;
-            margin-top: 15px;
+            margin-top: 80px;
             margin-left: 30px;
             width: 442px;
             text-align: left;
@@ -321,6 +324,7 @@
             letter-spacing: 0.05em;
             color: #040405;
             width: 108px;
+            white-space: nowrap;
             height: 19.87px;
             padding-bottom: 10px;
         }
@@ -380,6 +384,7 @@
         .pl-0 {
             padding-left: 0;
         }
+
     </style>
 </head>
 
@@ -388,74 +393,80 @@
         <table width="100%">
             <tr>
                 <td class="text-center">
-                    @if($logo)
-                    <img class="header-logo" src="{{ $logo }}" alt="Company Logo">
+                    @if ($logo)
+                        <img class="header-logo" style="height: 50px;" src="{{ $logo }}" alt="Company Logo">
                     @else
-                    @if($estimate->user->company)
-                    <h2 class="header-logo"> {{$estimate->user->company->name}} </h2>
-                    @endif
+                        @if ($estimate->customer->company)
+                            <h2 class="header-logo"> {{ $estimate->customer->company->name }} </h2>
+                        @endif
                     @endif
                 </td>
             </tr>
         </table>
         <hr class="header-bottom-divider" />
     </div>
+
     <div class="wrapper">
         <div class="company-details-container">
             <div class="company-address-container company-address">
                 {!! $company_address !!}
             </div>
+
             <div class="estimate-details-container">
                 <table class="estimate-details-table">
                     <tr>
                         <td class="attribute-label">@lang('pdf_estimate_number')</td>
-                        <td class="attribute-value"> &nbsp;{{$estimate->estimate_number}}</td>
+                        <td class="attribute-value"> &nbsp;{{ $estimate->estimate_number }}</td>
                     </tr>
                     <tr>
                         <td class="attribute-label">@lang('pdf_estimate_date')</td>
-                        <td class="attribute-value"> &nbsp;{{$estimate->formattedEstimateDate}}</td>
+                        <td class="attribute-value"> &nbsp;{{ $estimate->formattedEstimateDate }}</td>
                     </tr>
                     <tr>
                         <td class="attribute-label">@lang('pdf_estimate_expire_date')</td>
-                        <td class="attribute-value"> &nbsp;{{$estimate->formattedExpiryDate}}</td>
+                        <td class="attribute-value"> &nbsp;{{ $estimate->formattedExpiryDate }}</td>
                     </tr>
                 </table>
             </div>
             <div style="clear: both;"></div>
         </div>
+
         <div class="customer-address-container">
-            @if($billing_address !== '</br>')
+            @if ($billing_address !== '</br>')
                 <div class="billing-address-container billing-address">
-                    @if($billing_address)
-                        @lang('pdf_bill_to')
+                    @if ($billing_address)
+                        <b>@lang('pdf_bill_to')</b> <br>
                         {!! $billing_address !!}
                     @endif
                 </div>
             @endif
-            @if($billing_address !== '</br>')
-            <div class="shipping-address-container shipping-address">
-            @else
-            <div class="shipping-address-container--left shipping-address" style="padding-left:30px;">
-            @endif
-                @if($shipping_address)
-                    @lang('pdf_ship_to')
+
+
+            <div @if ($billing_address !== '</br>') class="shipping-address-container shipping-address" @else class="shipping-address-container--left shipping-address" style="padding-left:30px;" @endif>
+
+                @if ($shipping_address)
+                    <b>@lang('pdf_ship_to') </b> <br>
                     {!! $shipping_address !!}
                 @endif
             </div>
+
             <div style="clear: both;"></div>
-            </div>
-            <div style="position:relative">
-                @include('app.pdf.estimate.partials.table')
-            </div>
-            <div class="notes">
-                @if($notes)
-                    <div class="notes-label">
-                        @lang('pdf_notes')
-                    </div>
-                    {!! $notes !!}
-                @endif
-            </div>
         </div>
+
+        <div style="position:relative">
+            @include('app.pdf.estimate.partials.table')
+        </div>
+
+        <div class="notes">
+            @if ($notes)
+                <div class="notes-label">
+                    @lang('pdf_notes')
+                </div>
+
+                {!! $notes !!}
+            @endif
+        </div>
+    </div>
 </body>
 
 </html>
